@@ -106,14 +106,13 @@ def check_win(actual_board):
 
 
 def check_end_game(actual_board):
+    if check_win(actual_board):
+        print("Temos um vencedor")
+        return True
+
     if full_board(actual_board):
         print("Empate, tente novamente!")
         return True
-
-    if check_win(actual_board):
-        print("Temos um vencedor")
-
-
 
     return False
 
