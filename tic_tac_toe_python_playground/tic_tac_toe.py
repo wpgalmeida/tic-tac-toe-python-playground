@@ -53,15 +53,22 @@ def full_board(actual_board):
     return True
 
 
-def any_win(actual_board):
+def all_marked_with_the_same_symbol(sequence):
+    simb_win = sequence[0]
+    if simb_win is not None:
+        if len(sequence) == sequence.count(simb_win):
+            print("Simbolo {} venceu".format(simb_win))
+            return True
+
+    return False
+
+
+def check_win(actual_board):
 
     # Vencedor linha
     for row in actual_board:
-        simb_win = row[0]
-        if simb_win is not None:
-            if len(row) == row.count(simb_win):
-                print("Simbolo {} venceu".format(simb_win))
-                return True
+        if all_marked_with_the_same_symbol(row):
+            return True
 
     # Vencedor coluna
     size_board = len(actual_board)
@@ -70,11 +77,8 @@ def any_win(actual_board):
         for indice_col in range(0, size_board):
             col.append(actual_board[indice_col][indice_row])
 
-        simb_win = col[0]
-        if simb_win is not None:
-            if len(col) == col.count(simb_win):
-                print("Simbolo {} venceu".format(simb_win))
-                return True
+        if all_marked_with_the_same_symbol(col):
+            return True
 
     # Vencedor diagonal
     size_board = len(actual_board)
@@ -82,11 +86,8 @@ def any_win(actual_board):
     for indice_row in range(0, size_board):
         diagonal.append(actual_board[indice_row][indice_row])
 
-    simb_win = diagonal[0]
-    if simb_win is not None:
-        if len(diagonal) == diagonal.count(simb_win):
-            print("Simbolo {} venceu".format(simb_win))
-            return True
+    if all_marked_with_the_same_symbol(diagonal):
+        return True
 
     # Vencedor diagonal 2
     size_board = len(actual_board)
@@ -96,11 +97,8 @@ def any_win(actual_board):
         aux = aux - 1
         diagonal2.append(actual_board[indice_row][aux])
 
-    simb_win = diagonal2[0]
-    if simb_win is not None:
-        if len(diagonal2) == diagonal2.count(simb_win):
-            print("Simbolo {} venceu".format(simb_win))
-            return True
+    if all_marked_with_the_same_symbol(diagonal2):
+        return True
 
     return False
 
@@ -112,7 +110,7 @@ def check_end_game(actual_board):
         print("Empate, tente novamente!")
         return True
 
-    if any_win(actual_board):
+    if check_win(actual_board):
         print("Temos um vencedor")
 
 
@@ -138,7 +136,7 @@ def main_function():
         if check_end_game(board):
             break
 
-        if any_win(board):
+        if check_win(board):
             break
 
         made_move = False
@@ -146,7 +144,7 @@ def main_function():
             made_move, board = robot_move(board)
 
         print_board(board)
-        if any_win(board):
+        if check_win(board):
             break
 
 
