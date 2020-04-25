@@ -1,3 +1,4 @@
+from _blake2 import blake2b
 from asyncio import create_task
 import random
 
@@ -5,7 +6,10 @@ import random
 def create_board(size_board=3):
 
     if size_board < 3:
-        return "tabuleiro precisa ter mais do que 3 linhas"
+        return "tabuleiro precisa ter 3 ou mais linhas"
+
+    if size_board > 15:
+        return "tabuleiro muito grande escolha um numero menor"
 
     board = []
 
@@ -103,8 +107,6 @@ def check_win(actual_board):
     return False
 
 
-
-
 def check_end_game(actual_board):
     if check_win(actual_board):
         print("Temos um vencedor")
@@ -118,13 +120,16 @@ def check_end_game(actual_board):
 
 
 def main_function():
-    board = create_board()
+    board = None
+    while type(board) is not type([]):
+        size_board = int(input("Quantas linhas deseja em seu tabuleiro:"))
+        board = create_board(size_board)
+        print(board)
+
     print_board(board)
     end_game = False
 
     while not end_game:
-        end_game = check_end_game(board)
-
         made_move = False
         while not made_move:
             row_move = int(input('Sua vez, digite a linha:'))
@@ -135,15 +140,12 @@ def main_function():
         if check_end_game(board):
             break
 
-        if check_win(board):
-            break
-
         made_move = False
         while not made_move:
             made_move, board = robot_move(board)
 
         print_board(board)
-        if check_win(board):
+        if check_end_game(board):
             break
 
 
@@ -153,10 +155,8 @@ def print_board(board):
         print(rows)
 
 
-main_function()
-
-
-
+if __name__ == '__main__':
+    main_function()
 
 
 
