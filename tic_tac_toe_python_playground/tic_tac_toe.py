@@ -1,44 +1,7 @@
-from _blake2 import blake2b
-from asyncio import create_task
 import random
 
-
-def create_board(size_board=3):
-
-    if size_board < 3:
-        return "tabuleiro precisa ter 3 ou mais linhas"
-
-    if size_board > 15:
-        return "tabuleiro muito grande escolha um numero menor"
-
-    board = []
-
-    for position in range(0, size_board):
-        board.append([])
-
-        for i in range(0, size_board):
-            board[position].append(None)
-
-    return board
-
-
-def mark_move(actual_board, symbol_played, row_to_played, col_to_played):
-    max_position = len(actual_board) -1
-
-    if row_to_played > max_position or row_to_played < 0:
-        print("Linha não é valida")
-        return False, actual_board
-
-    if col_to_played > max_position or col_to_played < 0:
-        print("Coluna não é valida")
-        return False, actual_board
-
-    if actual_board[row_to_played][col_to_played] is not None:
-        print("Jogue em uma celula vazia!")
-        return False, actual_board
-
-    actual_board[row_to_played][col_to_played] = symbol_played
-    return True, actual_board
+from tic_tac_toe_python_playground.dealer import mark_move
+from tic_tac_toe_python_playground.game_builder import create_board
 
 
 def robot_move(actual_board):
@@ -68,7 +31,6 @@ def all_marked_with_the_same_symbol(sequence):
 
 
 def check_win(actual_board):
-
     # Vencedor linha
     for row in actual_board:
         if all_marked_with_the_same_symbol(row):
@@ -132,8 +94,8 @@ def main_function():
     while not end_game:
         made_move = False
         while not made_move:
-            row_move = int(input('Sua vez, digite a linha:'))
-            col_move = int(input('digite a coluna:'))
+            row_move = int(input("Sua vez, digite a linha:"))
+            col_move = int(input("digite a coluna:"))
             made_move, board = mark_move(board, "X", row_move, col_move)
 
         print_board(board)
@@ -155,10 +117,5 @@ def print_board(board):
         print(rows)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main_function()
-
-
-
-
-
