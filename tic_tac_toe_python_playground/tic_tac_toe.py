@@ -1,4 +1,5 @@
 import random
+import logging.config
 
 from tic_tac_toe_python_playground.dealer import mark_move
 from tic_tac_toe_python_playground.game_builder import (
@@ -8,6 +9,7 @@ from tic_tac_toe_python_playground.game_builder import (
 )
 from tic_tac_toe_python_playground.judge import check_end_game
 from tic_tac_toe_python_playground.printer import print_board
+from tic_tac_toe_python_playground.settings import LOGGING
 
 
 def robot_move(actual_board, movements_done):
@@ -61,4 +63,5 @@ def main_function():
 
 
 if __name__ == "__main__":
+    logging.config.dictConfig(LOGGING)
     main_function()
