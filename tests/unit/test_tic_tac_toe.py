@@ -5,7 +5,7 @@ from tic_tac_toe_python_playground.tic_tac_toe import robot_move
 
 
 class Test(TestCase):
-    def test_should_call_mark_move_with_proper_arguments(self):
+    def test_should_call_mark_move_with_proper_arguments_from_robot(self):
         fake_board_to_be_tested = [
             [None, None, None],
             [None, None, None],

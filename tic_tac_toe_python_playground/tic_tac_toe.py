@@ -3,7 +3,7 @@ import random
 from tic_tac_toe_python_playground.dealer import mark_move
 from tic_tac_toe_python_playground.game_builder import create_board
 from tic_tac_toe_python_playground.judge import check_end_game
-from tic_tac_toe_python_playground.view import print_board
+from tic_tac_toe_python_playground.printer import print_board
 
 
 def robot_move(actual_board):
