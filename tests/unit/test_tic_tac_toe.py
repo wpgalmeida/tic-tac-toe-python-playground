@@ -11,7 +11,7 @@ class Test(TestCase):
 
 
     def test_should_number_of_rows_same_the_number_of_cols(self):
-        board = create_board
+        board = create_board()
         number_rows = len(board)
         for row in board:
             number_cols = len(row)
@@ -26,7 +26,7 @@ class Test(TestCase):
     def test_should_standard_board_was_create_with_only_indice_numbers(self):
         fake_actual_board_to_be_tested = [
             [0, 1, 2],
-            [3, 4, 6],
+            [3, 4, 5],
             [6, 7, 8]
         ]
         returned_board = create_board()
@@ -68,12 +68,12 @@ class Test(TestCase):
     def test_should_moviment_was_done(self):
         board = [
             [0, 1, 2],
-            [3, 4, 6],
+            [3, 4, 5],
             [6, 7, 8]
         ]
         result_expected_board = [
             ["X", 1, 2],
-            [3, 4, 6],
+            [3, 4, 5],
             [6, 7, 8]
         ]
         actual_board = make_move(board, "X", 0)
@@ -83,7 +83,7 @@ class Test(TestCase):
     def test_should_win_in_row_1(self):
         fake_actual_board_to_be_tested = [
             ["X", "X", "X"],
-            [3, 4, 6],
+            [3, 4, 5],
             [6, 7, 8]
         ]
         self.assert_(check_end_game(fake_actual_board_to_be_tested))
@@ -213,6 +213,3 @@ class Test(TestCase):
             ["O", "X", "O"],
         ]
         self.assertFalse(check_end_game(fake_actual_board_to_be_tested))
-
-
-
