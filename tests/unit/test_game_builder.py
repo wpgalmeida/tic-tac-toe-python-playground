@@ -1,13 +1,11 @@
 from unittest import TestCase
 
-from tic_tac_toe_python_playground.game_builder import create_board
-from tic_tac_toe_python_playground.tic_tac_toe import BoardDoesNotHaveTheMinimalConfiguration, \
+from tic_tac_toe_python_playground.game_builder import create_board, BoardDoesNotHaveTheMinimalConfiguration, \
     BoardDoesNotHaveTheMaximumConfiguration
 
 
 class Test(TestCase):
     def test_should_can_not_create_board_less_than_size_3(self):
-        create_board(1)
         self.assertRaises(BoardDoesNotHaveTheMinimalConfiguration, create_board, 2)
 
     def test_should_number_of_rows_same_the_number_of_cols(self):
@@ -18,8 +16,7 @@ class Test(TestCase):
             self.assertEquals(number_cols, number_rows)
 
     def test_should_can_not_create_board_greather_than_size_10(self):
-        create_board(10)
-        self.assertRaises(BoardDoesNotHaveTheMaximumConfiguration, create_board, 10)
+        self.assertRaises(BoardDoesNotHaveTheMaximumConfiguration, create_board, 11)
 
     def test_should_standard_board_was_create_with_only_indice_numbers(self):
         fake_actual_board_to_be_tested = [
