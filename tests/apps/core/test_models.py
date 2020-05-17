@@ -216,3 +216,53 @@ class Test(TestCase):
 
         self.assertEquals(Movements.objects.all().count(), expected_count_value)
 
+    def test_should_return_all_movements_with_symbol_X_given_one_finished_game_with_5_movements(self):
+        #player
+        name_of_player_one = "Player one"
+        birth_of_player_one = "1989-1-25"
+        gender_of_player_one = "M"
+        p1_symbol = "X"
+        p1 = Player.objects.create(name=name_of_player_one, birth=birth_of_player_one, gender=gender_of_player_one)
+        name_of_player_two = "Bot"
+        birth_of_player_two = "2020-1-5"
+        gender_of_player_two = "O"
+        p2_symbol = "O"
+        p2 = Player.objects.create(name=name_of_player_two, birth=birth_of_player_two, gender=gender_of_player_two)
+        #board
+        board = Board.objects.create(num_rows=3, num_cols=3)
+        #playerboard
+        PlayerBoard.objects.create(player=p1, board=board, symbol=p1_symbol)
+        PlayerBoard.objects.create(player=p2, board=board, symbol=p2_symbol)
+        #game
+        game = Game.objects.create(board=board)
+        #movement one
+        movement = Movements.objects.create(player=p1, board=board, position=0)
+        movement = Movements.objects.create(player=p2, board=board, position=3)
+        movement = Movements.objects.create(player=p1, board=board, position=1)
+        movement = Movements.objects.create(player=p2, board=board, position=4)
+        movement = Movements.objects.create(player=p1, board=board, position=2)
+        #update game
+        Game.objects.filter(id=game.id).update(winner=p1)
+
+        '''
+        pb = PlayerBoard.objects.filter(symbol='X').get()
+        mv = Movements.objects.filter(player=pb.player)
+        '''
+        mv = Movements.objects.filter(player__playerboard__symbol='X', board__game__draw__exact=True)
+        entry_list = list(mv)
+        for pos in mv:
+            print(pos.position)
+            print(pos.player)
+            print(pos.board)
+
+
+
+
+
+
+
+
+
+
+
+
