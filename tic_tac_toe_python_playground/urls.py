@@ -16,6 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from tic_tac_toe_python_playground.apps.core.views import MyView, SampleGame
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
+    path("api/sample/hello-world", MyView.as_view()),
+    path("api/sample/test-game", SampleGame.as_view()),
 ]
