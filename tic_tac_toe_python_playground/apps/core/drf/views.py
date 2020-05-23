@@ -15,7 +15,7 @@ class PlayerViewSet(viewsets.ModelViewSet):
 
 class BoardViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows players to be viewed or edited.
+    API endpoint that allows board to be viewed or edited.
     """
 
     queryset = Board.objects.all()
