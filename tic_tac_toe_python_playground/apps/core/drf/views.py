@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 
-from tic_tac_toe_python_playground.apps.core.drf.serializers import PlayerSerializer
-from tic_tac_toe_python_playground.apps.core.models import Player
+from tic_tac_toe_python_playground.apps.core.drf.serializers import PlayerSerializer, BoardSerializer
+from tic_tac_toe_python_playground.apps.core.models import Player, Board
 
 
 class PlayerViewSet(viewsets.ModelViewSet):
@@ -11,3 +11,12 @@ class PlayerViewSet(viewsets.ModelViewSet):
 
     queryset = Player.objects.all()
     serializer_class = PlayerSerializer
+
+
+class BoardViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows players to be viewed or edited.
+    """
+
+    queryset = Board.objects.all()
+    serializer_class = BoardSerializer
