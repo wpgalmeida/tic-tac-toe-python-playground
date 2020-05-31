@@ -8,7 +8,7 @@ from tic_tac_toe_python_playground.apps.core.models import Game, Board
 
 class MyView(View):
     def get(self, request, *args, **kwargs):
-        return HttpResponse('Hello, World!')
+        return HttpResponse("Hello, World!")
 
 
 class GameView(View):
