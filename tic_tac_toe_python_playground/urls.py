@@ -15,19 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from rest_framework import routers
-
-from tic_tac_toe_python_playground.apps.core import views
-from tic_tac_toe_python_playground.apps.core.drf import views
 from tic_tac_toe_python_playground.apps.core.views import MyView, GameView
 
-router = routers.DefaultRouter()
-router.register(r"players", views.PlayerViewSet)
-router.register(r"boards", views.BoardViewSet)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("hello-world/", MyView.as_view()),
-    path("tic-tac-toe/", GameView.as_view()),
-    path("drf-api/", include(router.urls)),
+    path("", include("tic_tac_toe_python_playground.apps.core.drf.urls")),
 ]
