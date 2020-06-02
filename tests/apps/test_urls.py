@@ -1,6 +1,6 @@
 from django.test import TestCase, Client
 
-from tic_tac_toe_python_playground.apps.core.models import Player, Board, PlayerBoard
+from tic_tac_toe_python_playground.apps.core.models import Player, Board, PlayerBoard, Game, Movements
 
 
 class CrudTestPlayer(TestCase):
@@ -238,40 +238,141 @@ class CrudTestPlayerBoard(TestCase):
 class CrudTestGame(TestCase):
     def setUp(self) -> None:
         self.client = Client()
+        self.sample_board = Board.objects.create(num_rows=3, num_cols=3)
+        self.content_type = "application/json"
+        self.url_api_game = "/api-game/"
 
     def test_should_post_game(self):
         # test create Game
-        self.fail()
+        board_id = self.sample_board.id
+        game_to_be_created = {"board": str(board_id)}
+        response = self.client.post(self.url_api_game, data=game_to_be_created, content_type=self.content_type)
 
-    def test_should_game(self):
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(Game.objects.count(), 1)
+
+        created_game = Game.objects.first()
+
+        self.assertEqual(created_game.board, self.sample_board)
+        self.assertIsNone(created_game.winner)
+        self.assertFalse(created_game.draw)
+
+    def test_should_get_game(self):
         # test read Game
-        self.fail()
+        Game.objects.create(board=self.sample_board)
+
+        response = self.client.get(self.url_api_game)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Game.objects.count(), 1)
+
+        created_game = Game.objects.first()
+
+        self.assertEqual(created_game.board, self.sample_board)
+        self.assertIsNone(created_game.winner)
+        self.assertFalse(created_game.draw)
 
     def test_should_update_game(self):
         # test update Game
-        self.fail()
+        sample_game = Game.objects.create(board=self.sample_board)
+        game_to_be_updated = {"board": str(self.sample_board.id), "draw": True}
+        response = self.client.patch(
+            self.url_api_game + str(sample_game.id) + "/", data=game_to_be_updated, content_type=self.content_type
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Game.objects.count(), 1)
+
+        created_game = Game.objects.first()
+
+        self.assertEqual(created_game.board, self.sample_board)
+        self.assertIsNone(created_game.winner)
+        self.assertTrue(created_game.draw)
 
     def test_should_delete_game(self):
         # test delete Game
-        self.fail()
+        sample_game = Game.objects.create(board=self.sample_board)
+
+        self.assertEqual(Game.objects.count(), 1)
+
+        response = self.client.delete(self.url_api_game + str(sample_game.id) + "/")
+
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(Game.objects.count(), 0)
 
 
 class CrudTestMovements(TestCase):
     def setUp(self) -> None:
         self.client = Client()
+        self.sample_player = Player.objects.create(name="Player One", birth="2020-5-15", gender="M", bot=False)
+        self.sample_board = Board.objects.create(num_rows=3, num_cols=3)
+        self.content_type = "application/json"
+        self.url_api_movements = "/api-movement/"
 
-    def test_should_post_game(self):
+    def test_should_post_movements(self):
         # test create Movements
-        self.fail()
+        movements_to_be_created = {
+            "player": str(self.sample_player.id),
+            "board": str(self.sample_board.id),
+            "position": 9,
+        }
+        response = self.client.post(
+            self.url_api_movements, data=movements_to_be_created, content_type=self.content_type
+        )
 
-    def test_should_game(self):
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(Movements.objects.count(), 1)
+
+        created_movements: Movements = Movements.objects.first()
+
+        self.assertEqual(created_movements.board, self.sample_board)
+        self.assertEqual(created_movements.player, self.sample_player)
+        self.assertEqual(created_movements.position, 9)
+
+    def test_should_get_movements(self):
         # test read Movements
-        self.fail()
+        Movements.objects.create(player=self.sample_player, board=self.sample_board, position=9)
+        response = self.client.get(self.url_api_movements)
 
-    def test_should_update_game(self):
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Movements.objects.count(), 1)
+
+        created_movements: Movements = Movements.objects.first()
+
+        self.assertEqual(created_movements.board, self.sample_board)
+        self.assertEqual(created_movements.player, self.sample_player)
+        self.assertEqual(created_movements.position, 9)
+
+    def test_should_update_movements(self):
         # test update Movements
-        self.fail()
+        sample_movements = Movements.objects.create(player=self.sample_player, board=self.sample_board, position=9)
+        movements_to_be_updated = {
+            "position": 7,
+        }
 
-    def test_should_delete_game(self):
+        self.assertEqual(sample_movements.position, 9)
+
+        response = self.client.patch(
+            self.url_api_movements + str(sample_movements.id) + "/",
+            data=movements_to_be_updated,
+            content_type=self.content_type,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Movements.objects.count(), 1)
+
+        created_movements: Movements = Movements.objects.first()
+
+        self.assertEqual(created_movements.board, self.sample_board)
+        self.assertEqual(created_movements.player, self.sample_player)
+        self.assertEqual(created_movements.position, 7)
+
+    def test_should_delete_movements(self):
         # test delete Movements
-        self.fail()
+        sample_movements = Movements.objects.create(player=self.sample_player, board=self.sample_board, position=9)
+
+        self.assertEqual(Movements.objects.count(), 1)
+
+        response = self.client.delete(self.url_api_movements + str(sample_movements.id) + "/")
+
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(Movements.objects.count(), 0)
