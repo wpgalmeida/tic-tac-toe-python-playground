@@ -1,3 +1,4 @@
+from django.db import IntegrityError
 from django.test import TestCase, Client
 
 from tic_tac_toe_python_playground.apps.core.models import Player, Board, PlayerBoard, Game, Movements
@@ -376,3 +377,64 @@ class CrudTestMovements(TestCase):
 
         self.assertEqual(response.status_code, 204)
         self.assertEqual(Movements.objects.count(), 0)
+
+
+# General tests
+class ApiTests(TestCase):
+    def setUp(self) -> None:
+        self.client = Client()
+        self.content_type = "application/json"
+        self.url_api_movements = "/api-movement/"
+        self.url_api_player = "/api-players/"
+        self.sample_player_one = Player.objects.create(name="Player One", birth="2020-5-15", gender="M", bot=False)
+        self.sample_player_two = Player.objects.create(name="Player Two", birth="2020-5-15", gender="M", bot=True)
+        self.sample_board = Board.objects.create(num_rows=3, num_cols=3)
+        self.sample_movement = Movements.objects.create(
+            player=self.sample_player_one, board=self.sample_board, position=0
+        )
+
+    def test_should_raise_constraint_given_movement_in_same_position(self):
+        movement_to_be_created = {
+            "player": str(self.sample_player_one.id),
+            "board": str(self.sample_board.id),
+            "position": 0,
+        }
+
+        with self.assertRaisesMessage(
+            IntegrityError, "UNIQUE constraint failed: core_movements.position, " "core_movements.board_id"
+        ):
+            response = self.client.post(
+                self.url_api_movements, data=movement_to_be_created, content_type=self.content_type
+            )
+
+    def test_should_400_given_move_with_non_exist_player(self):
+        movement_to_be_created = {
+            "player": "xpto",
+            "board": str(self.sample_board.id),
+            "position": 0,
+        }
+        response = self.client.post(self.url_api_movements, data=movement_to_be_created, content_type=self.content_type)
+        # bad request
+        self.assertEqual(response.status_code, 400)
+
+    def test_should_400_given_move_with_non_exist_board(self):
+        movement_to_be_created = {
+            "player": str(self.sample_player_one.id),
+            "board": "xpto",
+            "position": 0,
+        }
+        response = self.client.post(self.url_api_movements, data=movement_to_be_created, content_type=self.content_type)
+        # bad request
+        self.assertEqual(response.status_code, 400)
+
+    def test_should_delete_player_that_is_playing(self):
+        PlayerBoard.objects.create(player=self.sample_player_one, board=self.sample_board, symbol="X")
+        qs = Player.objects.filter(id=self.sample_player_one.id)
+
+        self.assertEqual(qs.count(), 1)
+
+        response = self.client.delete(self.url_api_player + str(self.sample_player_one.id) + "/")
+        qs = Player.objects.filter(id=self.sample_player_one.id)
+
+        self.assertEqual(qs.count(), 0)
+        self.assertEqual(response.status_code, 204)

@@ -17,7 +17,7 @@ class Test(TestCase):
 
         self.assertEquals(Player.objects.all().count(), expected_count_value)
         self.assertEquals(created_player.name, name_of_player)
-#        self.assertEquals(created_player.birth, birth_of_player)
+        #        self.assertEquals(created_player.birth, birth_of_player)
         self.assertEquals(created_player.gender, gender_of_player)
         self.assertFalse(created_player.bot)
 
@@ -31,7 +31,7 @@ class Test(TestCase):
 
         self.assertEquals(Player.objects.all().count(), expected_count_value)
         self.assertEquals(created_player.name, name_of_player)
-#        self.assertEquals(created_player.birth, birth_of_player)
+        #        self.assertEquals(created_player.birth, birth_of_player)
         self.assertEquals(created_player.gender, gender_of_player)
         self.assertTrue(created_player.bot)
 
@@ -39,21 +39,21 @@ class Test(TestCase):
         birth_of_player = "1989-1-25"
         gender_of_player = "M"
 
-        with self.assertRaisesMessage(IntegrityError, 'NOT NULL constraint failed: core_player.name'):
+        with self.assertRaisesMessage(IntegrityError, "NOT NULL constraint failed: core_player.name"):
             Player.objects.create(birth=birth_of_player, gender=gender_of_player, name=None)
 
     def test_should_raise_given_player_without_birth(self):
         name_of_player = "Player one"
         gender_of_player = "M"
 
-        with self.assertRaisesMessage(IntegrityError, 'NOT NULL constraint failed: core_player.birth'):
+        with self.assertRaisesMessage(IntegrityError, "NOT NULL constraint failed: core_player.birth"):
             Player.objects.create(name=name_of_player, gender=gender_of_player, birth=None)
 
     def test_should_raise_given_player_without_gender(self):
         name_of_player = "Player one"
         birth_of_player = "2020-05-15"
 
-        with self.assertRaisesMessage(IntegrityError, 'NOT NULL constraint failed: core_player.gender'):
+        with self.assertRaisesMessage(IntegrityError, "NOT NULL constraint failed: core_player.gender"):
             Player.objects.create(name=name_of_player, birth=birth_of_player, gender=None)
 
     def test_should_create_board_3_3(self):
@@ -65,11 +65,11 @@ class Test(TestCase):
         self.assertEquals(Board.objects.all().first().num_rows, 3)
 
     def test_should_raise_given_create_board_without_number_of_cols(self):
-        with self.assertRaisesMessage(IntegrityError, 'NOT NULL constraint failed: core_board.num_cols'):
+        with self.assertRaisesMessage(IntegrityError, "NOT NULL constraint failed: core_board.num_cols"):
             Board.objects.create(num_rows=3)
 
     def test_should_raise_given_create_board_without_number_of_rows(self):
-        with self.assertRaisesMessage(IntegrityError, 'NOT NULL constraint failed: core_board.num_rows'):
+        with self.assertRaisesMessage(IntegrityError, "NOT NULL constraint failed: core_board.num_rows"):
             Board.objects.create(num_cols=3)
 
     def test_should_create_player_board(self):
@@ -78,7 +78,7 @@ class Test(TestCase):
         gender_of_player = "M"
         player = Player.objects.create(name=name_of_player, birth=birth_of_player, gender=gender_of_player)
         board = Board.objects.create(num_cols=3, num_rows=3)
-        PlayerBoard.objects.create(player=player, board=board, symbol='X')
+        PlayerBoard.objects.create(player=player, board=board, symbol="X")
         expected_count_value = 1
 
         self.assertEquals(PlayerBoard.objects.count(), expected_count_value)
@@ -90,7 +90,7 @@ class Test(TestCase):
         player = Player.objects.create(name=name_of_player, birth=birth_of_player, gender=gender_of_player)
         board = Board.objects.create(num_cols=3, num_rows=3)
 
-        with self.assertRaisesMessage(IntegrityError, 'NOT NULL constraint failed: core_playerboard.symbol'):
+        with self.assertRaisesMessage(IntegrityError, "NOT NULL constraint failed: core_playerboard.symbol"):
             PlayerBoard.objects.create(player=player, board=board)
 
     def test_should_create_two_player_board_with_the_same_board(self):
@@ -103,8 +103,8 @@ class Test(TestCase):
         p1 = Player.objects.create(name=name_of_player_one, birth=birth_of_player_one, gender=gender_of_player_one)
         p2 = Player.objects.create(name=name_of_player_two, birth=birth_of_player_two, gender=gender_of_player_two)
         board = Board.objects.create(num_cols=3, num_rows=3)
-        PlayerBoard.objects.create(player=p1, board=board, symbol='X')
-        PlayerBoard.objects.create(player=p2, board=board, symbol='O')
+        PlayerBoard.objects.create(player=p1, board=board, symbol="X")
+        PlayerBoard.objects.create(player=p2, board=board, symbol="O")
         expected_count_value = 2
 
         self.assertEquals(PlayerBoard.objects.count(), expected_count_value)
@@ -115,11 +115,12 @@ class Test(TestCase):
         gender_of_player_one = "M"
         p1 = Player.objects.create(name=name_of_player_one, birth=birth_of_player_one, gender=gender_of_player_one)
         board = Board.objects.create(num_cols=3, num_rows=3)
-        PlayerBoard.objects.create(player=p1, board=board, symbol='X')
+        PlayerBoard.objects.create(player=p1, board=board, symbol="X")
 
-        with self.assertRaisesMessage(IntegrityError, 'UNIQUE constraint failed: core_playerboard.player_id, '
-                                                      'core_playerboard.board_id'):
-            PlayerBoard.objects.create(player=p1, board=board, symbol='O')
+        with self.assertRaisesMessage(
+            IntegrityError, "UNIQUE constraint failed: core_playerboard.player_id, " "core_playerboard.board_id"
+        ):
+            PlayerBoard.objects.create(player=p1, board=board, symbol="O")
 
     def test_should_create_game(self):
         board = Board.objects.create(num_rows=3, num_cols=3)
@@ -143,7 +144,7 @@ class Test(TestCase):
 
     def test_should_create_winner_game(self):
         board = Board.objects.create(num_rows=3, num_cols=3)
-        p1 = Player.objects.create(name='Bot', birth='2020-5-15', gender='O')
+        p1 = Player.objects.create(name="Bot", birth="2020-5-15", gender="O")
         Game.objects.create(board=board, winner=p1)
         expected_count_value = 1
         created_game = Game.objects.all().first()
@@ -172,7 +173,7 @@ class Test(TestCase):
         p1 = Player.objects.create(name=name_of_player_one, birth=birth_of_player_one, gender=gender_of_player_one)
         board = Board.objects.create(num_rows=3, num_cols=3)
 
-        with self.assertRaisesMessage(IntegrityError, 'NOT NULL constraint failed: core_movements.position'):
+        with self.assertRaisesMessage(IntegrityError, "NOT NULL constraint failed: core_movements.position"):
             Movements.objects.create(player=p1, board=board)
 
     def test_should_raise_given_create_two_movements_in_the_same_board_and_position(self):
@@ -183,8 +184,9 @@ class Test(TestCase):
         board = Board.objects.create(num_rows=3, num_cols=3)
         Movements.objects.create(player=p1, board=board, position=0)
 
-        with self.assertRaisesMessage(IntegrityError, 'UNIQUE constraint failed: core_movements.position, '
-                                                      'core_movements.board_id'):
+        with self.assertRaisesMessage(
+            IntegrityError, "UNIQUE constraint failed: core_movements.position, " "core_movements.board_id"
+        ):
             Movements.objects.create(player=p1, board=board, position=0)
 
     def test_should_create_two_movements_with_the_same_player(self):
@@ -207,8 +209,9 @@ class Test(TestCase):
         name_of_player_two = "Bot"
         birth_of_player_two = "2020-5-16"
         gender_of_player_two = "O"
-        p2 = Player.objects.create(name=name_of_player_two, birth=birth_of_player_two,
-                                   gender=gender_of_player_two, bot=True)
+        p2 = Player.objects.create(
+            name=name_of_player_two, birth=birth_of_player_two, gender=gender_of_player_two, bot=True
+        )
         board = Board.objects.create(num_rows=3, num_cols=3)
         Movements.objects.create(player=p1, board=board, position=0)
         Movements.objects.create(player=p2, board=board, position=1)
@@ -217,7 +220,7 @@ class Test(TestCase):
         self.assertEquals(Movements.objects.all().count(), expected_count_value)
 
     def test_should_return_all_movements_with_symbol_X_given_one_finished_game_with_5_movements(self):
-        #player
+        # player
         name_of_player_one = "Player one"
         birth_of_player_one = "1989-1-25"
         gender_of_player_one = "M"
@@ -228,41 +231,29 @@ class Test(TestCase):
         gender_of_player_two = "O"
         p2_symbol = "O"
         p2 = Player.objects.create(name=name_of_player_two, birth=birth_of_player_two, gender=gender_of_player_two)
-        #board
+        # board
         board = Board.objects.create(num_rows=3, num_cols=3)
-        #playerboard
+        # playerboard
         PlayerBoard.objects.create(player=p1, board=board, symbol=p1_symbol)
         PlayerBoard.objects.create(player=p2, board=board, symbol=p2_symbol)
-        #game
+        # game
         game = Game.objects.create(board=board)
-        #movement one
+        # movement one
         movement = Movements.objects.create(player=p1, board=board, position=0)
         movement = Movements.objects.create(player=p2, board=board, position=3)
         movement = Movements.objects.create(player=p1, board=board, position=1)
         movement = Movements.objects.create(player=p2, board=board, position=4)
         movement = Movements.objects.create(player=p1, board=board, position=2)
-        #update game
+        # update game
         Game.objects.filter(id=game.id).update(winner=p1)
 
-        '''
+        """
         pb = PlayerBoard.objects.filter(symbol='X').get()
         mv = Movements.objects.filter(player=pb.player)
-        '''
-        mv = Movements.objects.filter(player__playerboard__symbol='X', board__game__draw__exact=True)
+        """
+        mv = Movements.objects.filter(player__playerboard__symbol="X", board__game__draw__exact=True)
         entry_list = list(mv)
         for pos in mv:
             print(pos.position)
             print(pos.player)
             print(pos.board)
-
-
-
-
-
-
-
-
-
-
-
-
