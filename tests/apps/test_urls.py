@@ -438,3 +438,66 @@ class ApiTests(TestCase):
 
         self.assertEqual(qs.count(), 0)
         self.assertEqual(response.status_code, 204)
+
+
+class SimulationGame(TestCase):
+    def setUp(self) -> None:
+        self.client = Client()
+        self.content_type = "application/json"
+        self.url_api_movements = "/api-movement/"
+        self.url_api_player = "/api-players/"
+        self.url_api_board = "/api-boards/"
+        self.url_api_player_board = "/api-player-board/"
+        self.url_api_game = "/api-game/"
+
+    def test_should_execute_all_process_of_game(self):
+        # POST / api - players /
+
+        player_one_to_be_created = {"name": "Player One", "birth": "2020-01-01", "gender": "M", "bot": False}
+        response_p1 = self.client.post(
+            self.url_api_player, data=player_one_to_be_created, content_type=self.content_type
+        )
+        player_one = response_p1.json()
+
+        player_bot_to_be_created = {"name": "Bot", "birth": "2020-01-01", "gender": "M", "bot": True}
+        response_p2 = self.client.post(
+            self.url_api_player, data=player_bot_to_be_created, content_type=self.content_type
+        )
+        player_bot = response_p2.json()
+
+        # POST / api - boards /
+        board_two_be_created = {"num_cols": 3, "num_rows": 3}
+        response_board = self.client.post(self.url_api_board, data=board_two_be_created, content_type=self.content_type)
+        board = response_board.json()
+
+        # POST / api - player - board /
+        player_board_to_be_created = {"symbol": "X", "player": player_one["id"], "board": board["id"]}
+        response_pb_one = self.client.post(
+            self.url_api_player_board, data=player_board_to_be_created, content_type=self.content_type
+        )
+
+        player_board_to_be_created = {"symbol": "O", "player": player_bot["id"], "board": board["id"]}
+        response_pb_bot = self.client.post(
+            self.url_api_player_board, data=player_board_to_be_created, content_type=self.content_type
+        )
+
+        # POST / api - game /
+        game_to_be_created = {"draw": False, "board": board["id"], "winner": None}
+        reśponse_game = self.client.post(self.url_api_game, data=game_to_be_created, content_type=self.content_type)
+
+        # POST /api-movement/
+        movement_to_be_created = {"position": 0, "player": player_one["id"], "board": board["id"]}
+        response_movement = self.client.post(
+            self.url_api_movements, data=movement_to_be_created, content_type=self.content_type
+        )
+        m_1 = response_movement.json()
+
+        movement_to_be_created = {"position": 1, "player": player_bot["id"], "board": board["id"]}
+        response_movement = self.client.post(
+            self.url_api_movements, data=movement_to_be_created, content_type=self.content_type
+        )
+        m_2 = response_movement.json()
+
+        self.assertEqual(m_2["player"], movement_to_be_created["player"])
+        self.assertEqual(m_2["board"], movement_to_be_created["board"])
+        self.assertEqual(m_2["position"], movement_to_be_created["position"])

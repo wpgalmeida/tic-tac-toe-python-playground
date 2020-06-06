@@ -46,7 +46,7 @@ Primeiro crie um jogador
     POST /api-players/
     {
         "name": "Player One",
-        "birth": 01-01-2020,
+        "birth": 2020-01-01,
         "gender": "M",
         "bot": False
     }
@@ -56,7 +56,7 @@ Crie um segundo jogador, neste exemplo será um "robô", mas pode ser um outro h
         POST /api-players/
     {
         "name": "Bot",
-        "birth": 01-01-2020,
+        "birth": 2020-01-01,
         "gender": "M",
         "bot": True
     }
