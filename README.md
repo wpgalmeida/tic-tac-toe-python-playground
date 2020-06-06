@@ -27,7 +27,7 @@ Criar seu ambiente virtual:
 
 Instalar requisitos: 
 	
-	pip install -r requiriments.txt
+	pip install -r requirements.txt
 
 Executar migrate: 
 	
