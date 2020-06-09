@@ -449,6 +449,7 @@ class SimulationGame(TestCase):
         self.url_api_board = "/api-boards/"
         self.url_api_player_board = "/api-player-board/"
         self.url_api_game = "/api-game/"
+        self.url_api_v1_movement = "/api/v1/movement/"
 
     def test_should_execute_all_process_of_game(self):
         # POST / api - players /
@@ -488,7 +489,7 @@ class SimulationGame(TestCase):
         # POST /api-movement/
         movement_to_be_created = {"position": 0, "player": player_one["id"], "board": board["id"]}
         response_movement = self.client.post(
-            self.url_api_movements, data=movement_to_be_created, content_type=self.content_type
+            self.url_api_v1_movement, data=movement_to_be_created, content_type=self.content_type
         )
         m_1 = response_movement.json()
 
