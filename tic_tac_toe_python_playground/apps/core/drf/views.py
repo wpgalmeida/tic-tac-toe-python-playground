@@ -133,11 +133,27 @@ class MovementsViewSet(viewsets.ModelViewSet):
         headers = self.get_success_headers(serializer.data)
 
         custom_serializer = serializer.data
-        # available_positions = check_and_evaluate_available_positions(custom_serializer["board"]))
-        custom_serializer["available_positions"] = str(custom_serializer["board"])
+        available_positions = check_and_evaluate_available_positions(custom_serializer["board"])
+        custom_serializer["available_positions"] = str(available_positions)
 
         return Response(custom_serializer, status=status.HTTP_201_CREATED, headers=headers)
 
 
 def check_and_evaluate_available_positions(board_id):
-    pass
+    done_movements = []
+    available_movements = []
+
+    board: Board = Board.objects.filter(id=board_id).get()
+    max_position = board.num_cols * board.num_rows
+    mv: Movements = Movements.objects.filter(board_id=board_id)
+
+    list_of_movements = list(mv)
+
+    for ind in range(0, len(list_of_movements)):
+        done_movements.append(list_of_movements[ind].position)
+
+    for pos in range(0, max_position):
+        if pos not in done_movements:
+            available_movements.append(pos)
+
+    return available_movements

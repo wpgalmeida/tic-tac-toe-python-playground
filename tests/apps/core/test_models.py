@@ -257,3 +257,34 @@ class Test(TestCase):
             print(pos.position)
             print(pos.player)
             print(pos.board)
+
+    def test_should_return_all_movements_valids_in_a_clear_board_3x3(self):
+        # player
+        name_of_player_one = "Player one"
+        birth_of_player_one = "1989-1-25"
+        gender_of_player_one = "M"
+        p1_symbol = "X"
+        p1 = Player.objects.create(name=name_of_player_one, birth=birth_of_player_one, gender=gender_of_player_one)
+
+        board = Board.objects.create(num_cols=3, num_rows=3)
+
+        Movements.objects.create(player=p1, board=board, position=3)
+        Movements.objects.create(player=p1, board=board, position=2)
+        Movements.objects.create(player=p1, board=board, position=1)
+        Movements.objects.create(player=p1, board=board, position=7)
+
+        mv = Movements.objects.filter(board_id=board.id)
+
+        done_move = []
+        available_pos = []
+        expected_available_pos = [0, 4, 5, 6, 8]
+
+        entry_list = list(mv)
+        for ind in range(0, len(entry_list)):
+            done_move.append(entry_list[ind].position)
+
+        for pos in range(0, board.num_rows * board.num_rows):
+            if pos not in done_move:
+                available_pos.append(pos)
+
+        self.assertEqual(available_pos, expected_available_pos)
