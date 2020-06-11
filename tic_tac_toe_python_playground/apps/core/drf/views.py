@@ -129,14 +129,32 @@ class MovementsViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+
+        custom_serializer = serializer.validated_data
+        board_id = str(custom_serializer["board"].id)
+        player = custom_serializer["player"]
+        position_moved = custom_serializer["position"]
+        available_positions = check_and_evaluate_available_positions(board_id)
+
+        # Validar jogador não é o mesmo do ultimo movimento
+        last_movement: Movements = self.queryset.order_by("created_at").last()
+        if last_movement is not None and last_movement.player == player:
+            headers = self.get_success_headers(serializer.data)
+            view_serializer = serializer.data
+            view_serializer["PlayerMoveIs"] = "Não é a sua vez"
+            return Response(view_serializer, status=status.HTTP_400_BAD_REQUEST, headers=headers)
+
+        # Validar posicao valida
+        if position_moved not in available_positions:
+            headers = self.get_success_headers(serializer.data)
+            view_serializer = serializer.data
+            view_serializer["availableMovements"] = available_positions
+            return Response(view_serializer, status=status.HTTP_400_BAD_REQUEST, headers=headers)
+
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-
-        custom_serializer = serializer.data
-        available_positions = check_and_evaluate_available_positions(custom_serializer["board"])
-        custom_serializer["available_positions"] = str(available_positions)
-
-        return Response(custom_serializer, status=status.HTTP_201_CREATED, headers=headers)
+        view_serializer = serializer.data
+        return Response(view_serializer, status=status.HTTP_201_CREATED, headers=headers)
 
 
 def check_and_evaluate_available_positions(board_id):
