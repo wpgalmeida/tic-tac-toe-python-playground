@@ -10,7 +10,7 @@ class SimpleTest(TestCase):
         response = client.get("/hello-world/")
 
         content_as_str = response.content.decode()
-        expected_result = 'Hello, World!'
+        expected_result = "Hello, World!"
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(content_as_str, expected_result)

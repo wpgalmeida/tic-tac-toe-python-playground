@@ -1,6 +1,7 @@
 from django.db import IntegrityError
 from django.test import TestCase, Client
 
+from tic_tac_toe_python_playground.apps.core.game_builder import create_board
 from tic_tac_toe_python_playground.apps.core.models import Player, Board, PlayerBoard, Game, Movements
 
 
@@ -493,12 +494,76 @@ class SimulationGame(TestCase):
         )
         m_1 = response_movement.json()
 
-        movement_to_be_created = {"position": 1, "player": player_bot["id"], "board": board["id"]}
+        movement_to_be_created = {"position": 0, "player": player_one["id"], "board": board["id"]}
         response_movement = self.client.post(
-            self.url_api_movements, data=movement_to_be_created, content_type=self.content_type
+            self.url_api_v1_movement, data=movement_to_be_created, content_type=self.content_type
         )
         m_2 = response_movement.json()
 
         self.assertEqual(m_2["player"], movement_to_be_created["player"])
         self.assertEqual(m_2["board"], movement_to_be_created["board"])
         self.assertEqual(m_2["position"], movement_to_be_created["position"])
+
+    def test_should_return_last_player_move(self):
+        Player.objects.create(name="Player One", birth="2020-5-15", gender="M", bot=True)
+        Player.objects.create(name="Player Two", birth="2020-5-15", gender="M", bot=True)
+        p3 = Player.objects.create(name="Player Three", birth="2020-5-15", gender="M", bot=True)
+
+        last_player = Player.objects.order_by("updated_at").last()
+
+        self.assertEqual(last_player, p3)
+
+    def test_should_check_end_game_and_return_false(self):
+        # POST / api - players /
+
+        player_one_to_be_created = {"name": "Player One", "birth": "2020-01-01", "gender": "M", "bot": False}
+        response_p1 = self.client.post(
+            self.url_api_player, data=player_one_to_be_created, content_type=self.content_type
+        )
+        player_one = response_p1.json()
+
+        player_bot_to_be_created = {"name": "Bot", "birth": "2020-01-01", "gender": "M", "bot": True}
+        response_p2 = self.client.post(
+            self.url_api_player, data=player_bot_to_be_created, content_type=self.content_type
+        )
+        player_bot = response_p2.json()
+
+        # POST / api - boards /
+        board_two_be_created = {"num_cols": 3, "num_rows": 3}
+        response_board = self.client.post(self.url_api_board, data=board_two_be_created, content_type=self.content_type)
+        board = response_board.json()
+
+        # POST / api - player - board /
+        player_board_to_be_created = {"symbol": "X", "player": player_one["id"], "board": board["id"]}
+        response_pb_one = self.client.post(
+            self.url_api_player_board, data=player_board_to_be_created, content_type=self.content_type
+        )
+
+        player_board_to_be_created = {"symbol": "O", "player": player_bot["id"], "board": board["id"]}
+        response_pb_bot = self.client.post(
+            self.url_api_player_board, data=player_board_to_be_created, content_type=self.content_type
+        )
+
+        # POST / api - game /
+        game_to_be_created = {"draw": False, "board": board["id"], "winner": None}
+        reśponse_game = self.client.post(self.url_api_game, data=game_to_be_created, content_type=self.content_type)
+
+        # POST /api-movement/
+        movement_to_be_created = {"position": 0, "player": player_one["id"], "board": board["id"]}
+        response_movement = self.client.post(
+            self.url_api_v1_movement, data=movement_to_be_created, content_type=self.content_type
+        )
+        m_1 = response_movement.json()
+
+        movement_to_be_created = {"position": 0, "player": player_one["id"], "board": board["id"]}
+        response_movement = self.client.post(
+            self.url_api_v1_movement, data=movement_to_be_created, content_type=self.content_type
+        )
+        m_2 = response_movement.json()
+
+        movement_to_be_created = {"position": 1, "player": player_one["id"], "board": board["id"]}
+        response_movement = self.client.post(
+            self.url_api_v1_movement, data=movement_to_be_created, content_type=self.content_type
+        )
+
+        array_board[0][1] = "0"

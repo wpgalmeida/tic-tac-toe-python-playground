@@ -1,6 +1,7 @@
 from rest_framework import generics, viewsets, status
 from rest_framework.response import Response
 
+from tic_tac_toe_python_playground.apps.core.dealer import make_move
 from tic_tac_toe_python_playground.apps.core.drf.serializers import (
     PlayerSerializer,
     BoardSerializer,
@@ -8,6 +9,8 @@ from tic_tac_toe_python_playground.apps.core.drf.serializers import (
     GameSerializer,
     MovementsSerializer,
 )
+from tic_tac_toe_python_playground.apps.core.game_builder import create_board
+from tic_tac_toe_python_playground.apps.core.judge import check_end_game
 from tic_tac_toe_python_playground.apps.core.models import Player, Board, PlayerBoard, Game, Movements
 
 
@@ -150,6 +153,10 @@ class MovementsViewSet(viewsets.ModelViewSet):
             view_serializer = serializer.data
             view_serializer["availableMovements"] = available_positions
             return Response(view_serializer, status=status.HTTP_400_BAD_REQUEST, headers=headers)
+
+        # Validar fim de jogo
+        # board = create_board()
+        # make_move(board, position_moved, )
 
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
