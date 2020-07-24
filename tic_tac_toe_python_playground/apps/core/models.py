@@ -1,5 +1,6 @@
 import uuid
 
+from django.core.exceptions import ValidationError
 from django.db import models
 
 
@@ -24,9 +25,20 @@ class Player(StandardModelMixin):
         return self.name
 
 
+def num_row_is_valid(value):
+    if value < 3 or value > 6:
+        return False
+
+
 class Board(StandardModelMixin):
-    num_cols = models.IntegerField()
+    # num_rows = models.IntegerField(validators=[validate_num_rows])
     num_rows = models.IntegerField()
+
+    def save(self, *args, **kwargs):
+        if not num_row_is_valid(self.num_rows):
+            raise ValueError("Numero de linhas deve ser entre 3 e 6")
+        else:
+            super().save(*args, **kwargs)  # Call the "real" save() method.
 
 
 class PlayerBoard(StandardModelMixin):
