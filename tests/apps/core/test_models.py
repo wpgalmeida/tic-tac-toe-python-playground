@@ -3,7 +3,7 @@ from datetime import datetime
 from django.db import IntegrityError
 from django.test import TestCase
 
-from tic_tac_toe_python_playground.apps.core.models import Player
+from tic_tac_toe_python_playground.apps.core.models import Player, Board
 
 
 class Test(TestCase):
@@ -57,3 +57,56 @@ class Test(TestCase):
             IntegrityError, "NOT NULL constraint failed: core_player.birth"
         ):
             Player.objects.create(name=self.name, gender=self.gender)
+
+    # Test for board
+    def test_should_raise_given_board_with_number_rows_less_than_3(self):
+        with self.assertRaisesMessage(
+            ValueError, "Numero de linhas deve ser entre 3 e 6"
+        ):
+            Board.objects.create(num_rows=1)
+
+    def test_should_raise_given_board_with_number_rows_greather_than_6(self):
+        with self.assertRaisesMessage(
+            ValueError, "Numero de linhas deve ser entre 3 e 6"
+        ):
+            Board.objects.create(num_rows=7)
+
+    def test_should_create_board_with_3_rows(self):
+        expected_count_value = 1
+
+        Board.objects.create(num_rows=3)
+
+        created_board: Board = Board.objects.first()
+
+        self.assertEqual(Board.objects.all().count(), expected_count_value)
+        self.assertEqual(created_board.num_rows, 3)
+
+    def test_should_create_board_with_4_rows(self):
+        expected_count_value = 1
+
+        Board.objects.create(num_rows=4)
+
+        created_board: Board = Board.objects.first()
+
+        self.assertEqual(Board.objects.all().count(), expected_count_value)
+        self.assertEqual(created_board.num_rows, 4)
+
+    def test_should_create_board_with_5_rows(self):
+        expected_count_value = 1
+
+        Board.objects.create(num_rows=5)
+
+        created_board: Board = Board.objects.first()
+
+        self.assertEqual(Board.objects.all().count(), expected_count_value)
+        self.assertEqual(created_board.num_rows, 5)
+
+    def test_should_create_board_with_6_rows(self):
+        expected_count_value = 1
+
+        Board.objects.create(num_rows=6)
+
+        created_board: Board = Board.objects.first()
+
+        self.assertEqual(Board.objects.all().count(), expected_count_value)
+        self.assertEqual(created_board.num_rows, 6)

@@ -28,6 +28,7 @@ class Player(StandardModelMixin):
 def num_row_is_valid(value):
     if value < 3 or value > 6:
         return False
+    return True
 
 
 class Board(StandardModelMixin):
