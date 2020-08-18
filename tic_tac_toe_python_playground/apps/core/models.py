@@ -42,10 +42,24 @@ class Board(StandardModelMixin):
             super().save(*args, **kwargs)  # Call the "real" save() method.
 
 
+def symbol_is_valid(symbol):
+    last_pb = PlayerBoard.objects.last()
+    if last_pb != None:
+        if last_pb.symbol == symbol:
+            return False
+    return True
+
+
 class PlayerBoard(StandardModelMixin):
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     board = models.ForeignKey(Board, on_delete=models.CASCADE)
     symbol = models.CharField(max_length=1, blank=False, default=None)
+
+    def save(self, *args, **kwargs):
+        if not symbol_is_valid(self.symbol):
+            raise ValueError("Escolha outro simbolo")
+        else:
+            super().save(*args, **kwargs)  # Call the "real" save() method.
 
     class Meta:
         constraints = [

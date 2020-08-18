@@ -173,7 +173,7 @@ class Test(TestCase):
         self.assertEqual(player_board[0].board, board)
         self.assertEqual(player_board[1].board, board)
 
-    def test_should_create_two_boards_with_the_same_players(self,):
+    def test_should_create_two_player_board_with_the_same_player_and_differents_boards(self,):
         expected_count_value = 2
         player_one = Player.objects.create(
             name=self.name, birth=self.birth, gender=self.gender
@@ -190,7 +190,6 @@ class Test(TestCase):
     def test_should_raise_unique_constraint_given_create_two_times_the_same_player_in_a_player_board(
         self,
     ):
-        expected_count_value = 1
         player = Player.objects.create(
             name=self.name, birth=self.birth, gender=self.gender
         )
@@ -202,3 +201,21 @@ class Test(TestCase):
             "UNIQUE constraint failed: core_playerboard.player_id, core_playerboard.board_id",
         ):
             PlayerBoard.objects.create(player=player, board=board, symbol="O")
+
+    def test_should_raise_given_create_player_board_with_the_same_symbol(self):
+        player_one = Player.objects.create(
+            name=self.name, birth=self.birth, gender=self.gender
+        )
+        player_two = Player.objects.create(
+            name=self.name_p2, birth=self.birth_p2, gender=self.gender_p2, bot=True
+        )
+        board = Board.objects.create(num_rows=3)
+        PlayerBoard.objects.create(player=player_one, board=board, symbol="X")
+
+        with self.assertRaisesMessage(
+            ValueError, "Escolha outro simbolo"
+        ):
+            PlayerBoard.objects.create(player=player_two, board=board, symbol="X")
+
+
+
