@@ -23,15 +23,41 @@ class Player(StandardModelMixin):
         return self.name
 
 
+def num_row_is_valid(value):
+    if value < 3 or value > 6:
+        return False
+    return True
+
+
 class Board(StandardModelMixin):
     # num_cols = models.IntegerField()
     num_rows = models.IntegerField()
+
+    def save(self, *args, **kwargs):
+        if not num_row_is_valid(self.num_rows):
+            raise ValueError("Numero de linhas deve ser entre 3 e 6")
+        else:
+            super().save(*args, **kwargs)  # Call the "real" save() method.
+
+
+def symbol_is_valid(symbol, board):
+    last_pb = PlayerBoard.objects.last()
+    if last_pb != None:
+        if last_pb.symbol == symbol and last_pb.board == board:
+            return False
+    return True
 
 
 class PlayerBoard(StandardModelMixin):
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     board = models.ForeignKey(Board, on_delete=models.CASCADE)
     symbol = models.CharField(max_length=1, blank=False, default=None)
+
+    def save(self, *args, **kwargs):
+        if not symbol_is_valid(self.symbol, self.board):
+            raise ValueError("Escolha outro simbolo")
+        else:
+            super().save(*args, **kwargs)  # Call the "real" save() method.
 
     class Meta:
         constraints = [
