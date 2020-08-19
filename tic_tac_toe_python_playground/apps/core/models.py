@@ -24,7 +24,7 @@ class Player(StandardModelMixin):
 
 
 class Board(StandardModelMixin):
-    num_cols = models.IntegerField()
+    # num_cols = models.IntegerField()
     num_rows = models.IntegerField()
 
 
