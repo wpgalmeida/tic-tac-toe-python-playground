@@ -264,23 +264,28 @@ class Test(TestCase):
         self.assertEqual(movement_pb_one.board, pb_one.board)
         self.assertEqual(movement_pb_one.position, 1)
 
-    def test_should_raise_unique_constraint_given_create_two_times_the_same_movement(
-        self,
+        move: Movements = Movements.objects.filter(position=1).get()
+        pb: PlayerBoard = PlayerBoard.objects.filter(
+            player=move.player, board=move.board
+        ).get()
+        symb = pb.symbol
+
+        self.assertEqual(symb, "X")
+
+
+def test_should_raise_unique_constraint_given_create_two_times_the_same_movement(self,):
+    player_one = Player.objects.create(
+        name=self.name, birth=self.birth, gender=self.gender
+    )
+    board = Board.objects.create(num_rows=3)
+    PlayerBoard.objects.create(player=player_one, board=board, symbol="X")
+
+    pb_one: PlayerBoard = PlayerBoard.objects.first()
+
+    Movements.objects.create(player=pb_one.player, board=pb_one.board, position=1)
+
+    with self.assertRaisesMessage(
+        IntegrityError,
+        "UNIQUE constraint failed: core_movements.position, core_movements.board_id",
     ):
-        player_one = Player.objects.create(
-            name=self.name, birth=self.birth, gender=self.gender
-        )
-        board = Board.objects.create(num_rows=3)
-        PlayerBoard.objects.create(player=player_one, board=board, symbol="X")
-
-        pb_one: PlayerBoard = PlayerBoard.objects.first()
-
         Movements.objects.create(player=pb_one.player, board=pb_one.board, position=1)
-
-        with self.assertRaisesMessage(
-            IntegrityError,
-            "UNIQUE constraint failed: core_movements.position, core_movements.board_id",
-        ):
-            Movements.objects.create(
-                player=pb_one.player, board=pb_one.board, position=1
-            )
