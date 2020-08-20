@@ -3,7 +3,13 @@ from datetime import datetime
 from django.db import IntegrityError
 from django.test import TestCase
 
-from tic_tac_toe_python_playground.apps.core.models import Player, Board, PlayerBoard
+from tic_tac_toe_python_playground.apps.core.models import (
+    Player,
+    Board,
+    PlayerBoard,
+    Movements,
+    Game,
+)
 
 
 class Test(TestCase):
@@ -216,3 +222,65 @@ class Test(TestCase):
 
         with self.assertRaisesMessage(ValueError, "Escolha outro simbolo"):
             PlayerBoard.objects.create(player=player_two, board=board, symbol="X")
+
+    # tests for Game
+    def test_should_create_game(self):
+        expected_count_value = 1
+        player_one = Player.objects.create(
+            name=self.name, birth=self.birth, gender=self.gender
+        )
+        board = Board.objects.create(num_rows=3)
+        PlayerBoard.objects.create(player=player_one, board=board, symbol="X")
+
+        pb_one: PlayerBoard = PlayerBoard.objects.first()
+
+        Game.objects.create(board=pb_one.board)
+
+        self.assertEqual(Game.objects.all().count(), expected_count_value)
+
+        game: Game = Game.objects.first()
+
+        self.assertEqual(game.board, pb_one.board)
+        self.assertFalse(game.draw)
+        self.assertFalse(game.winner)
+
+    def test_should_create_movement(self):
+        expected_count_value = 1
+        player_one = Player.objects.create(
+            name=self.name, birth=self.birth, gender=self.gender
+        )
+        board = Board.objects.create(num_rows=3)
+        PlayerBoard.objects.create(player=player_one, board=board, symbol="X")
+
+        pb_one: PlayerBoard = PlayerBoard.objects.first()
+
+        Movements.objects.create(player=pb_one.player, board=pb_one.board, position=1)
+
+        self.assertEqual(Movements.objects.all().count(), expected_count_value)
+
+        movement_pb_one: Movements = Movements.objects.first()
+
+        self.assertEqual(movement_pb_one.player, pb_one.player)
+        self.assertEqual(movement_pb_one.board, pb_one.board)
+        self.assertEqual(movement_pb_one.position, 1)
+
+    def test_should_raise_unique_constraint_given_create_two_times_the_same_movement(
+        self,
+    ):
+        player_one = Player.objects.create(
+            name=self.name, birth=self.birth, gender=self.gender
+        )
+        board = Board.objects.create(num_rows=3)
+        PlayerBoard.objects.create(player=player_one, board=board, symbol="X")
+
+        pb_one: PlayerBoard = PlayerBoard.objects.first()
+
+        Movements.objects.create(player=pb_one.player, board=pb_one.board, position=1)
+
+        with self.assertRaisesMessage(
+            IntegrityError,
+            "UNIQUE constraint failed: core_movements.position, core_movements.board_id",
+        ):
+            Movements.objects.create(
+                player=pb_one.player, board=pb_one.board, position=1
+            )
