@@ -3,6 +3,8 @@ from datetime import datetime
 from django.db import IntegrityError
 from django.test import TestCase
 
+from tic_tac_toe_python_playground.apps.core.dealer import mark_move
+from tic_tac_toe_python_playground.apps.core.game_builder import create_board
 from tic_tac_toe_python_playground.apps.core.models import (
     Player,
     Board,
@@ -244,6 +246,7 @@ class Test(TestCase):
         self.assertFalse(game.draw)
         self.assertFalse(game.winner)
 
+    # tests for movement
     def test_should_create_movement(self):
         expected_count_value = 1
         player_one = Player.objects.create(
@@ -272,20 +275,46 @@ class Test(TestCase):
 
         self.assertEqual(symb, "X")
 
-
-def test_should_raise_unique_constraint_given_create_two_times_the_same_movement(self,):
-    player_one = Player.objects.create(
-        name=self.name, birth=self.birth, gender=self.gender
-    )
-    board = Board.objects.create(num_rows=3)
-    PlayerBoard.objects.create(player=player_one, board=board, symbol="X")
-
-    pb_one: PlayerBoard = PlayerBoard.objects.first()
-
-    Movements.objects.create(player=pb_one.player, board=pb_one.board, position=1)
-
-    with self.assertRaisesMessage(
-        IntegrityError,
-        "UNIQUE constraint failed: core_movements.position, core_movements.board_id",
+    def test_should_raise_unique_constraint_given_create_two_times_the_same_movement(
+        self,
     ):
+        player_one = Player.objects.create(
+            name=self.name, birth=self.birth, gender=self.gender
+        )
+        board = Board.objects.create(num_rows=3)
+        PlayerBoard.objects.create(player=player_one, board=board, symbol="X")
+
+        pb_one: PlayerBoard = PlayerBoard.objects.first()
+
         Movements.objects.create(player=pb_one.player, board=pb_one.board, position=1)
+
+        with self.assertRaisesMessage(
+            IntegrityError,
+            "UNIQUE constraint failed: core_movements.position, core_movements.board_id",
+        ):
+            Movements.objects.create(
+                player=pb_one.player, board=pb_one.board, position=1
+            )
+
+    def test_should_create_movement_and_check_win(self):
+        # criar jogadores
+        player_one = Player.objects.create(
+            name=self.name, birth=self.birth, gender=self.gender
+        )
+        player_two = Player.objects.create(
+            name=self.name_p2, birth=self.birth_p2, gender=self.gender_p2
+        )
+
+        # criar tabuleiro
+        board = Board.objects.create(num_rows=3)
+        board_to_check = create_board(board.num_rows)
+
+        # escolher simbolo do jogador no tabuleiro
+        pb_one = PlayerBoard.objects.create(player=player_one, board=board, symbol="X")
+        pb_two = PlayerBoard.objects.create(player=player_two, board=board, symbol="O")
+
+        # fazer o primeiro movimento
+        Movements.objects.create(player=player_one, board=board, position=0)
+        mark_move(board_to_check, pb_one.symbol, 0)
+
+        pass
