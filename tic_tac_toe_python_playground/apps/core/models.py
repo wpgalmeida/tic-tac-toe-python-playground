@@ -93,6 +93,8 @@ def _fill_board_with_all_movements(board, player, position):
             board_to_check = mark_move(
                 board_to_check, pb_data.symbol, movement.position
             )
+    else:
+        Game.objects.create(board=board)
 
     return board_to_check
 
