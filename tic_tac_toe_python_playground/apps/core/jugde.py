@@ -1,7 +1,5 @@
 import logging
 
-from tic_tac_toe_python_playground.apps.core.models import PlayerBoard
-
 logger = logging.getLogger(__name__)
 
 

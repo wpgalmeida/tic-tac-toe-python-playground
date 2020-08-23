@@ -5,6 +5,7 @@ from django.test import TestCase
 
 from tic_tac_toe_python_playground.apps.core.dealer import mark_move
 from tic_tac_toe_python_playground.apps.core.game_builder import create_board
+from tic_tac_toe_python_playground.apps.core.jugde import check_end_game
 from tic_tac_toe_python_playground.apps.core.models import (
     Player,
     Board,
@@ -307,14 +308,41 @@ class Test(TestCase):
 
         # criar tabuleiro
         board = Board.objects.create(num_rows=3)
-        board_to_check = create_board(board.num_rows)
 
         # escolher simbolo do jogador no tabuleiro
         pb_one = PlayerBoard.objects.create(player=player_one, board=board, symbol="X")
         pb_two = PlayerBoard.objects.create(player=player_two, board=board, symbol="O")
 
-        # fazer o primeiro movimento
+        # fazer movimentos
         Movements.objects.create(player=player_one, board=board, position=0)
-        mark_move(board_to_check, pb_one.symbol, 0)
+        Movements.objects.create(player=player_two, board=board, position=3)
+        Movements.objects.create(player=player_one, board=board, position=1)
+        Movements.objects.create(player=player_two, board=board, position=4)
+        Movements.objects.create(player=player_one, board=board, position=2)
 
         pass
+
+    # def test_should_create_movement_and_check_win(self):
+    #     # criar jogadores
+    #     player_one = Player.objects.create(
+    #         name=self.name, birth=self.birth, gender=self.gender
+    #     )
+    #     player_two = Player.objects.create(
+    #         name=self.name_p2, birth=self.birth_p2, gender=self.gender_p2
+    #     )
+    #
+    #     # criar tabuleiro
+    #     board = Board.objects.create(num_rows=3)
+    #     board_to_check = create_board(board.num_rows)
+    #
+    #     # escolher simbolo do jogador no tabuleiro
+    #     pb_one = PlayerBoard.objects.create(player=player_one, board=board, symbol="X")
+    #     pb_two = PlayerBoard.objects.create(player=player_two, board=board, symbol="O")
+    #
+    #     # fazer o primeiro movimento
+    #     Movements.objects.create(player=player_one, board=board, position=0)
+    #     board_to_check = mark_move(board_to_check, pb_one.symbol, 0)
+    #     check_end_game(board_to_check)
+    #
+    #
+    #     pass

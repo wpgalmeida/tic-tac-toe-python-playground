@@ -3,6 +3,11 @@ import uuid
 from django.db import models
 
 # Create your models here.
+from tic_tac_toe_python_playground.apps.core.dealer import mark_move
+from tic_tac_toe_python_playground.apps.core.game_builder import create_board
+from tic_tac_toe_python_playground.apps.core.jugde import check_end_game
+
+
 class StandardModelMixin(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -73,10 +78,43 @@ class Game(StandardModelMixin):
     draw = models.BooleanField(default=False)
 
 
+def _fill_board_with_all_movements(board, player, position):
+    qs_movements = Movements.objects.filter(board=board)
+    size_qs = qs_movements.all().count()
+    board_data = Board.objects.filter(id=board.id).get()
+    board_to_check = create_board(board_data.num_rows)
+
+    if size_qs > 0:
+        for i in range(0, size_qs):
+            movement = qs_movements[i]
+            pb_data = PlayerBoard.objects.filter(
+                board=movement.board, player=movement.player
+            ).get()
+            board_to_check = mark_move(
+                board_to_check, pb_data.symbol, movement.position
+            )
+
+    return board_to_check
+
+
+def _check_end_game(board, player, position):
+    # old movements
+    board_to_check = _fill_board_with_all_movements(board, player, position)
+    # actual movement
+    pb_data = PlayerBoard.objects.filter(board=board, player=player).get()
+    board_to_check = mark_move(board_to_check, pb_data.symbol, position)
+
+    check_end_game(board_to_check)
+
+
 class Movements(StandardModelMixin):
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     board = models.ForeignKey(Board, on_delete=models.CASCADE)
     position = models.IntegerField()
+
+    def save(self, *args, **kwargs):
+        _check_end_game(self.board, self.player, self.position)
+        super().save(*args, **kwargs)  # Call the "real" save() method.
 
     class Meta:
         constraints = [
