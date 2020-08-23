@@ -297,7 +297,7 @@ class Test(TestCase):
                 player=pb_one.player, board=pb_one.board, position=1
             )
 
-    def test_should_create_movement_and_check_win(self):
+    def test_should_raise_end_game_with_make_move_after_have_winner(self):
         # criar jogadores
         player_one = Player.objects.create(
             name=self.name, birth=self.birth, gender=self.gender
@@ -319,30 +319,38 @@ class Test(TestCase):
         Movements.objects.create(player=player_one, board=board, position=1)
         Movements.objects.create(player=player_two, board=board, position=4)
         Movements.objects.create(player=player_one, board=board, position=2)
+        with self.assertRaisesMessage(
+            ValueError, "Este jogo terminou, não é possivel fazer mais jogadas.",
+        ):
+            Movements.objects.create(player=player_one, board=board, position=5)
 
-        pass
+    def test_should_raise_end_game_with_make_move_after_have_draw(self):
+        # criar jogadores
+        player_one = Player.objects.create(
+            name=self.name, birth=self.birth, gender=self.gender
+        )
+        player_two = Player.objects.create(
+            name=self.name_p2, birth=self.birth_p2, gender=self.gender_p2
+        )
 
-    # def test_should_create_movement_and_check_win(self):
-    #     # criar jogadores
-    #     player_one = Player.objects.create(
-    #         name=self.name, birth=self.birth, gender=self.gender
-    #     )
-    #     player_two = Player.objects.create(
-    #         name=self.name_p2, birth=self.birth_p2, gender=self.gender_p2
-    #     )
-    #
-    #     # criar tabuleiro
-    #     board = Board.objects.create(num_rows=3)
-    #     board_to_check = create_board(board.num_rows)
-    #
-    #     # escolher simbolo do jogador no tabuleiro
-    #     pb_one = PlayerBoard.objects.create(player=player_one, board=board, symbol="X")
-    #     pb_two = PlayerBoard.objects.create(player=player_two, board=board, symbol="O")
-    #
-    #     # fazer o primeiro movimento
-    #     Movements.objects.create(player=player_one, board=board, position=0)
-    #     board_to_check = mark_move(board_to_check, pb_one.symbol, 0)
-    #     check_end_game(board_to_check)
-    #
-    #
-    #     pass
+        # criar tabuleiro
+        board = Board.objects.create(num_rows=3)
+
+        # escolher simbolo do jogador no tabuleiro
+        pb_one = PlayerBoard.objects.create(player=player_one, board=board, symbol="X")
+        pb_two = PlayerBoard.objects.create(player=player_two, board=board, symbol="O")
+
+        # fazer movimentos
+        Movements.objects.create(player=player_one, board=board, position=0)
+        Movements.objects.create(player=player_two, board=board, position=2)
+        Movements.objects.create(player=player_one, board=board, position=1)
+        Movements.objects.create(player=player_two, board=board, position=3)
+        Movements.objects.create(player=player_one, board=board, position=5)
+        Movements.objects.create(player=player_two, board=board, position=4)
+        Movements.objects.create(player=player_one, board=board, position=6)
+        Movements.objects.create(player=player_two, board=board, position=8)
+        Movements.objects.create(player=player_one, board=board, position=7)
+        with self.assertRaisesMessage(
+            ValueError, "Este jogo terminou, não é possivel fazer mais jogadas.",
+        ):
+            Movements.objects.create(player=player_one, board=board, position=5)

@@ -97,14 +97,25 @@ def _fill_board_with_all_movements(board, player, position):
     return board_to_check
 
 
-def _check_end_game(board, player, position):
+def _make_movement(board, player, position):
     # old movements
     board_to_check = _fill_board_with_all_movements(board, player, position)
     # actual movement
     pb_data = PlayerBoard.objects.filter(board=board, player=player).get()
     board_to_check = mark_move(board_to_check, pb_data.symbol, position)
 
-    check_end_game(board_to_check)
+    check_end_game(board_to_check, board, player)
+
+
+def _end_game(board):
+    game_win = Game.objects.filter(board=board, winner__isnull=False)
+    game_draw = Game.objects.filter(board=board, draw=True)
+
+    if game_win.all().count() > 0:
+        return True
+    elif game_draw.all().count() > 0:
+        return True
+    return False
 
 
 class Movements(StandardModelMixin):
@@ -113,8 +124,11 @@ class Movements(StandardModelMixin):
     position = models.IntegerField()
 
     def save(self, *args, **kwargs):
-        _check_end_game(self.board, self.player, self.position)
-        super().save(*args, **kwargs)  # Call the "real" save() method.
+        if _end_game(self.board):
+            raise ValueError("Este jogo terminou, não é possivel fazer mais jogadas.")
+        else:
+            _make_movement(self.board, self.player, self.position)
+            super().save(*args, **kwargs)  # Call the "real" save() method.
 
     class Meta:
         constraints = [

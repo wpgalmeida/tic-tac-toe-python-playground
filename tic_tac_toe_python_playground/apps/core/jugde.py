@@ -1,5 +1,7 @@
 import logging
 
+import tic_tac_toe_python_playground.apps.core.models
+
 logger = logging.getLogger(__name__)
 
 
@@ -79,13 +81,19 @@ def _draw(actual_board):
     return True
 
 
-def check_end_game(actual_board):
+def check_end_game(actual_board, board, player):
     if _check_win(actual_board):
         logger.info("We have a winner")
+        tic_tac_toe_python_playground.apps.core.models.Game.objects.create(
+            board=board, winner=player
+        )
         return True
 
     if _draw(actual_board):
         logger.info("Sadly a draw was evaluated")
+        tic_tac_toe_python_playground.apps.core.models.Game.objects.create(
+            board=board, draw=True
+        )
         return True
 
     return False
