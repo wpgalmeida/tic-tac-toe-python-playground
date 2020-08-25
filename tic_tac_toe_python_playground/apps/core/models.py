@@ -106,7 +106,12 @@ def _make_movement(board, player, position):
     pb_data = PlayerBoard.objects.filter(board=board, player=player).get()
     board_to_check = mark_move(board_to_check, pb_data.symbol, position)
 
-    check_end_game(board_to_check, board, player)
+    win, draw = check_end_game(board_to_check)
+
+    if win:
+        Game.objects.create(board=board, winner=player)
+    elif draw:
+        Game.objects.create(board=board, draw=draw)
 
 
 def _end_game(board):

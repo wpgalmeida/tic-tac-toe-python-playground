@@ -81,19 +81,16 @@ def _draw(actual_board):
     return True
 
 
-def check_end_game(actual_board, board, player):
+def check_end_game(actual_board):
+    ret_win = False
+    ret_draw = False
+
     if _check_win(actual_board):
         logger.info("We have a winner")
-        tic_tac_toe_python_playground.apps.core.models.Game.objects.create(
-            board=board, winner=player
-        )
-        return True
+        ret_win = True
 
     if _draw(actual_board):
         logger.info("Sadly a draw was evaluated")
-        tic_tac_toe_python_playground.apps.core.models.Game.objects.create(
-            board=board, draw=True
-        )
-        return True
+        ret_draw = True
 
-    return False
+    return ret_win, ret_draw
