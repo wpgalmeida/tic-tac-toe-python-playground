@@ -3,9 +3,9 @@ from datetime import datetime
 from django.db import IntegrityError
 from django.test import TestCase
 
-from tic_tac_toe_python_playground.apps.core.dealer import mark_move
-from tic_tac_toe_python_playground.apps.core.game_builder import create_board
-from tic_tac_toe_python_playground.apps.core.jugde import check_end_game
+from tic_tac_toe_python_playground.apps.core.dealer import (
+    CellIsNotEmptyMaybeSomeStepWasMissedException,
+)
 from tic_tac_toe_python_playground.apps.core.models import (
     Player,
     Board,
@@ -289,13 +289,28 @@ class Test(TestCase):
 
         Movements.objects.create(player=pb_one.player, board=pb_one.board, position=1)
 
-        with self.assertRaisesMessage(
-            IntegrityError,
-            "UNIQUE constraint failed: core_movements.position, core_movements.board_id",
-        ):
-            Movements.objects.create(
-                player=pb_one.player, board=pb_one.board, position=1
-            )
+        self.assertRaises(
+            CellIsNotEmptyMaybeSomeStepWasMissedException,
+            Movements.objects.create,
+            player=pb_one.player,
+            board=pb_one.board,
+            position=1,
+        )
+
+        # with self.assertRaisesMessage(
+        #     IntegrityError,
+        #     "UNIQUE constraint failed: core_movements.position, core_movements.board_id",
+        # ):
+        #     Movements.objects.create(
+        #         player=pb_one.player, board=pb_one.board, position=1
+        #     )
+
+        # with self.assertRaises(
+        #     IntegrityError, "CellIsNotEmptyMaybeSomeStepWasMissedException",
+        # ):
+        #     Movements.objects.create(
+        #         player=pb_one.player, board=pb_one.board, position=1
+        #     )
 
     def test_should_create_movement_and_check_win(self):
         # criar jogadores
@@ -348,6 +363,11 @@ class Test(TestCase):
         Movements.objects.create(player=player_one, board=board, position=1)
         Movements.objects.create(player=player_two, board=board, position=4)
         Movements.objects.create(player=player_one, board=board, position=2)
+
+        game = Game.objects.filter(board=board)
+
+        self.assertEqual(game[0].winner, player_one)
+
         with self.assertRaisesMessage(
             ValueError, "Este jogo terminou, não é possivel fazer mais jogadas.",
         ):
@@ -379,6 +399,11 @@ class Test(TestCase):
         Movements.objects.create(player=player_one, board=board, position=6)
         Movements.objects.create(player=player_two, board=board, position=8)
         Movements.objects.create(player=player_one, board=board, position=7)
+
+        game = Game.objects.filter(board=board)
+
+        self.assertTrue(game[0].draw)
+
         with self.assertRaisesMessage(
             ValueError, "Este jogo terminou, não é possivel fazer mais jogadas.",
         ):
