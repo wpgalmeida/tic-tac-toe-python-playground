@@ -1,5 +1,7 @@
 import logging
 
+import tic_tac_toe_python_playground.apps.core.models
+
 logger = logging.getLogger(__name__)
 
 
@@ -63,24 +65,32 @@ def _check_win(actual_board):
     logger.debug("Evaluating winner reverse diagonal...")
     is_winner_reverse_diagonal = _has_winner_reverse_diagonal(actual_board)
 
-    return is_winner_horizontally or is_winner_vertically or is_winner_diagonal or is_winner_reverse_diagonal
+    return (
+        is_winner_horizontally
+        or is_winner_vertically
+        or is_winner_diagonal
+        or is_winner_reverse_diagonal
+    )
 
 
 def _draw(actual_board):
     for row in actual_board:
         for cell in row:
-            if type(cell) == int:
+            if cell is None:
                 return False
     return True
 
 
 def check_end_game(actual_board):
+    ret_win = False
+    ret_draw = False
+
     if _check_win(actual_board):
         logger.info("We have a winner")
-        return True
+        ret_win = True
 
     if _draw(actual_board):
         logger.info("Sadly a draw was evaluated")
-        return True
+        ret_draw = True
 
-    return False
+    return ret_win, ret_draw

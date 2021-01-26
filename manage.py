@@ -5,6 +5,7 @@ import sys
 
 
 def main():
+    """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'tic_tac_toe_python_playground.settings')
     try:
         from django.core.management import execute_from_command_line
