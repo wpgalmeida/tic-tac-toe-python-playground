@@ -17,3 +17,8 @@ class Test(TestCase):
         expected_board_to_be_tested = [[0, 1, 2, 3], [4, 5, 6, 7], [8, 9, 10, 11], [12, 13, 14, 15]]
         result = create_board(4)
         self.assertEquals(expected_board_to_be_tested, result)
+
+    def test_should_create_default_board_5x5(self):
+        expected_board_to_be_tested = [[0, 1, 2, 3], [4, 5, 6, 7], [8, 9, 10, 11], [12, 13, 14, 15]]
+        result = create_board(4)
+        self.assertEquals(expected_board_to_be_tested, result)
